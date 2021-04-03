@@ -26,6 +26,9 @@ void doexit(int status) {
 void wait_for_server(rest_handle *rh,int *hits,short hitct) {
   while(rest_press_button(rh,0,PRESENCE,hits,hitct)) {
     sleep(1);
+    if(do_exit == 1) {
+      return;
+    }
   }
 
 }
