@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
-
+#include <time.h>
 
 #include "lcdout.h"
 #include "restio.h"
@@ -59,6 +59,8 @@ int main(int argc,char* argv[])
   struct stat statconfig;
 
   char rawconfig[CONFIGSIZE+1];
+
+  time_t tNow;
   
   // Get the LCD up and running.  
   lcdfd = lcd_init();
@@ -117,6 +119,8 @@ int main(int argc,char* argv[])
     exit(1);
   }
 
+  //printf("url = '%s'\n",URL);
+  
   json_object_put(jobj);
 
   // Set up for intercepting ctrl-c and such
@@ -153,7 +157,12 @@ int main(int argc,char* argv[])
 	lcd_backlight(lcdfd,0);
     	lcd_clear(lcdfd);
 	return(0);
-      }      
+      }
+
+      tNow = time(0);
+      if(tNow%3600 == 0) {
+	rest_press_button(rh,0,PRESENCE,hits,lcd_presencect(lcdfd));
+      }
       
       if(screen_dirty) {
 	do_main_display(lcdfd,lcd_presencect(lcdfd),hits);

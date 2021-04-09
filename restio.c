@@ -76,6 +76,7 @@ int rest_press_button(rest_handle *handle,int which,rest_button_change direction
   //printf("Sending %s\n",webbuffer);
 
   // Really long URL to include hashed auth creds.
+  //printf("Path = '%s'\n",handle->path);
   curl_easy_setopt(curl,CURLOPT_URL,handle->path);
 
   headers = curl_slist_append(headers,"Accept: application/json");
