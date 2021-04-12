@@ -61,6 +61,8 @@ int main(int argc,char* argv[])
   char rawconfig[CONFIGSIZE+1];
 
   time_t tNow;
+  time_t tBefore;
+  time_t idlecheck;
   
   // Get the LCD up and running.  
   lcdfd = lcd_init();
@@ -100,12 +102,16 @@ int main(int argc,char* argv[])
   
   deskid = 0;
   URL = 0;
+  idlecheck = 3600;
   json_object_object_foreach(jobj,key,val) {
     if(strcmp(key,"URL")==0) {
       URL = strdup(json_object_get_string(val));
     }
     if(strcmp(key,"deskid")==0) {
       deskid = json_object_get_int(val);
+    }
+    if(strcmp(key,"idlecheck")==0) {
+      idlecheck = json_object_get_int(val);
     }
   }
 
@@ -147,6 +153,8 @@ int main(int argc,char* argv[])
   //}
   wait_for_server(rh,hits,lcd_presencect(lcdfd));
 
+  tBefore = time(0);
+
   prevstate = lcd_buttons(lcdfd);
   prevpres =  lcd_presencect(lcdfd);
   screen_dirty = 1;
@@ -160,12 +168,17 @@ int main(int argc,char* argv[])
       }
 
       tNow = time(0);
-      if(tNow%3600 == 0) {
-	rest_press_button(rh,0,PRESENCE,hits,lcd_presencect(lcdfd));
+      if(tNow > (tBefore + idlecheck)) {
+	do_network_activity(lcdfd);
+	if(rest_press_button(rh,0,PRESENCE,hits,lcd_presencect(lcdfd))) {
+	  wait_for_server(rh,hits,lcd_presencect(lcdfd));
+	}
+	tBefore = tNow;
+	screen_dirty = 1;
       }
       
       if(screen_dirty) {
-	do_main_display(lcdfd,lcd_presencect(lcdfd),hits);
+	do_main_display(lcdfd,lcd_presencect(lcdfd),hits,deskid);
 	screen_dirty = 0;
       }
 
@@ -177,8 +190,7 @@ int main(int argc,char* argv[])
       case 0:
 	screen_dirty = 1;
 
-	lcd_gotoxy(lcdfd,19,1);
-	lcd_puts(lcdfd,"\n\t");
+	do_network_activity(lcdfd);
 	// New packet from controller
 	if(prevstate != lcd_buttons(lcdfd)) {
 	  // Button pressed or unpressed
@@ -230,3 +242,4 @@ int main(int argc,char* argv[])
   
   return 0;
 }
+

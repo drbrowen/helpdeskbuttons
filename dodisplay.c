@@ -4,7 +4,7 @@
 
 // Mostly just a list of things to do in order.
 
-void do_main_display(lcd_device *lcdfd,int presence,int hits[4])
+void do_main_display(lcd_device *lcdfd,int presence,int hits[4],int deskid)
 {
   char buf[64];
   lcd_clear(lcdfd);
@@ -15,11 +15,12 @@ void do_main_display(lcd_device *lcdfd,int presence,int hits[4])
 
   lcd_gotoxy(lcdfd,0,1);
 
-  snprintf(buf,64,"%3d %3d %3d %3d",
+  snprintf(buf,64,"%3d %3d %3d %3d  D:%d",
 	   hits[0],
 	   hits[1],
 	   hits[2],
-	   hits[3]);
+	   hits[3],
+	   deskid);
 
   lcd_puts(lcdfd,buf);
   
@@ -37,4 +38,11 @@ void do_init_display(lcd_device *lcdfd)
   lcd_gotoxy(lcdfd,0,1);
   lcd_puts(lcdfd,"Waiting for server...");
 
+}
+
+void do_network_activity(lcd_device *lcdfd)
+{
+  lcd_gotoxy(lcdfd,21,1);
+  lcd_puts(lcdfd,"\n\t");
+  
 }
