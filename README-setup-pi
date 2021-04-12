@@ -1,0 +1,39 @@
+Installation:
+
+Install dependencies (Assuming logged in as pi):
+
+cd
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install libhidapi-dev libcurl4-openssl-dev libjson-c-dev git
+sudo service ssh enable # Optional
+git clone https://github.com/drbrowen/helpdeskbuttons
+cd helpdeskbuttons
+make # Ignore warnings
+make
+sudo cp helpdeskbuttons.conf.sampe /etc/helpdeskbuttons.conf
+
+
+Now edit /etc/helpdeskbuttons.conf and set deskid and url/password
+
+--
+
+The following will keep the card in the pi read-only so it won't wear out and
+the pi can be unplugged at will
+
+sudo /bin/su -
+update-rc.d dphys-swapfile stop
+update-rc.d dphys-swapfile disable
+update-rc.d ntpd disable
+update-rc.d ntp disable
+update-rc.d bluetooth disable
+update-rc.d avahi-daemon disable
+cd /etc
+mv rsyslog.conf rsyslog.conf.stock
+echo '*.debug /dev/null' > rsyslog.conf # Change for remote logging?
+exit
+
+Add '/home/pi/helpdeskbuttons/helpdesk &' to /etc/rc.local
+
+Change options in fstab for '/' to be 'ro,defaults,noatime'
+
