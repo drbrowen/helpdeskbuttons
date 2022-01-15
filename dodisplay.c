@@ -15,12 +15,12 @@ void do_main_display(lcd_device *lcdfd,int presence,int hits[4],int deskid)
 
   lcd_gotoxy(lcdfd,0,1);
 
-  snprintf(buf,64,"%3d %3d %3d %3d  D:%d",
+  snprintf(buf,64,"%3d %3d %3d %3d  D:%c",
 	   hits[0],
 	   hits[1],
 	   hits[2],
 	   hits[3],
-	   deskid);
+	   deskid==1 ? 'A':'B');
 
   lcd_puts(lcdfd,buf);
   
